@@ -8,8 +8,9 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, accuracy_score
 from random import sample
+import os
 
-dataset = pd.read_csv("data/iris.data").to_numpy()
+dataset = pd.read_csv(os.path.dirname(os.path.realpath(__file__))+"/data/iris.data").to_numpy()
 
 # 80% of the dataset used for training
 # 20% of the dataset used for testing
@@ -45,5 +46,5 @@ Y_pred = M.predict(X_ts)
 print("Accuracy: {}".format(accuracy_score(Y_ts, Y_pred)))
 print(confusion_matrix(Y_ts, Y_pred))
 
-with open('model/iris_model', 'wb') as f:
+with open(os.path.dirname(os.path.realpath(__file__))+'/model/iris_model', 'wb') as f:
     joblib.dump(M, f)
