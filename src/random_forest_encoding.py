@@ -5,8 +5,8 @@ Example of the encoding of random forests using "encode_rf_utils.py" module
 import joblib
 from pysat.solvers import Solver
 
-import encode_rf_utils as utils
-import mock_model as mm
+import lib.encode_rf_utils as utils
+import lib.mock_model as mm
 
 
 def create_mock_model():
