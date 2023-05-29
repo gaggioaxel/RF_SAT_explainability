@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from sklearn import tree
 import os
 
-with open(os.getcwd()+'/model/iris_model', 'rb') as r:
+with open(os.path.dirname(os.path.realpath(__file__))+'/model/iris_model', 'rb') as r:
     M = joblib.load(r)
 
 # explore tree 0 of the random forest

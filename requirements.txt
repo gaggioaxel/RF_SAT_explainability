@@ -1,0 +1,5 @@
+joblib
+matplotlib
+numpy
+python-sat[aiger,approxmc,pblib]
+scikit-learn
