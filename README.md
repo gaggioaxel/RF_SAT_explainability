@@ -18,7 +18,7 @@ The purpose of this project is to encode random forest models with SAT as explai
 
 ### References
 To generate the random forest model [Scikit learn](https://scikit-learn.org/stable/) library has been used.\
-To encode and manipulate boolean and pseudo-boolean formulas [PySAT](https://pysathq.github.io/) library has been used.
+To encode and manipulate boolean and pseudo-boolean formulas [PySAT](https://pysathq.github.io/) library has been used.\
 The original work: [Yacine Izza, Joao Marques-Silva. 2021. On Explaining Random Forests with SAT]
 
 @inproceedings{ims-ijcai21,
