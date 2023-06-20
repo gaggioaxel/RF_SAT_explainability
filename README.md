@@ -19,3 +19,21 @@ The purpose of this project is to encode random forest models with SAT as explai
 ### References
 To generate the random forest model [Scikit learn](https://scikit-learn.org/stable/) library has been used.\
 To encode and manipulate boolean and pseudo-boolean formulas [PySAT](https://pysathq.github.io/) library has been used.
+The original work: [Yacine Izza, Joao Marques-Silva. 2021. On Explaining Random Forests with SAT]
+
+@inproceedings{ims-ijcai21,
+  author       = {Yacine Izza and
+                  Jo{\~{a}}o Marques{-}Silva},
+  editor       = {Zhi{-}Hua Zhou},
+  title        = {On Explaining Random Forests with {SAT}},
+  booktitle    = {Proceedings of the Thirtieth International Joint Conference on Artificial
+                  Intelligence, {IJCAI} 2021, Virtual Event / Montreal, Canada, 19-27
+                  August 2021},
+  pages        = {2584--2591},
+  publisher    = {ijcai.org},
+  year         = {2021},
+  url          = {https://doi.org/10.24963/ijcai.2021/356},
+  doi          = {10.24963/ijcai.2021/356}
+}
+
+And the [github repo](https://github.com/yizza91/RFxpl)
