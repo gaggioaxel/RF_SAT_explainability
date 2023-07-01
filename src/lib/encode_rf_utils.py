@@ -2,13 +2,111 @@
 This file contains utils functions to encode a Sci-kit learn RandomForestClassifier in SAT as explained in "On
 Explaining Random Forests with SAT" by Yacine Izza and Joao Marques-Silva
 """
-
+import math
+import joblib
+import numpy as cond
 import numpy as np
-from pysat.card import CardEnc
+from pysat.card import CardEnc, IDPool, EncType
 from pysat.pb import PBEnc
 from sklearn.tree import _tree
 from pysat.formula import CNF, CNFPlus
+import mock_model as mm
+from sklearn import tree
+from pysat.solvers import Solver
+import pysat
+import copy
 
+v_pool_max = 0
+
+
+def create_mock_model_paper():
+    """
+    Mock Model of the paper
+
+
+    Returns
+    -------
+    model : mm.MockForest
+        model of the forest
+    features_name : list
+        list of all the names of the features of the model    
+    """
+
+    classes = [0, 1]  # 0 is NO and 1 is YES
+
+    features1 = [0, 2, -2, -2, -2]
+    features2 = [1, -2, 3, -2, -2]
+    features3 = [1, 0, 2, -2, -2, -2, -2]
+
+    threshold1 = [0, 0, -2, -2, -2]
+    threshold2 = [0, -2, 75, -2, -2]
+    threshold3 = [0, 0, 0, -2, -2, -2, -2]
+
+    values1 = [[], [], [1, 0], [0, 1], [1, 0]]
+    values2 = [[], [1, 0], [], [0, 1], [1, 0]]
+    values3 = [[], [], [], [0, 1], [1, 0], [0, 1], [1, 0]]
+
+    children_left1 = [1, 3, -1, -1, -1]
+    children_right1 = [2, 4, -1, -1, -1]
+
+    children_left2 = [1, -1, 3, -1, -1]
+    children_right2 = [2, -1, 4, -1, -1]
+
+    children_left3 = [1, 3, 5, -1, -1, -1, -1]
+    children_right3 = [2, 4, 6, -1, -1, -1, -1]
+
+    mock_tree1 = mm.MockTree(features1, threshold1, values1, children_left1, children_right1)
+    mock_tree2 = mm.MockTree(features2, threshold2, values2, children_left2, children_right2)
+    mock_tree3 = mm.MockTree(features3, threshold3, values3, children_left3, children_right3)
+
+    forest_estimators = [mock_tree1, mock_tree2, mock_tree3]
+
+    model = mm.MockForest(forest_estimators, classes) 
+
+    feature_names = ['blocked arteries', 'good-blood circulation', 'chest-pain', 'weight']
+
+    return model, feature_names
+
+
+def create_mock_model():
+    """
+    Mock Model
+
+
+    Returns
+    -------
+    model : mm.MockForest
+        model of the forest
+    features_name : list
+        list of all the names of the features of the model    
+    """
+    classes = [0, 1, 2]
+
+    features1 = [0, 1, 2, -2, -2, -2, -2]
+    features2 = [1, -2, 2, -2, -2]
+
+    threshold1 = [2.1, 1.2, 3.4, -2, -2, -2, -2]
+    threshold2 = [1.9, -2, 6.5, -2, -2]
+
+    values1 = [[], [], [], [1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 0]]
+    values2 = [[], [1, 0, 0], [], [0, 1, 0], [0, 0, 1]]
+
+    children_left1 = [1, 3, 5, -1, -1, -1, -1]
+    children_right1 = [2, 4, 6, -1, -1, -1, -1]
+
+    children_left2 = [1, -1, 3, -1, -1]
+    children_right2 = [2, -1, 4, -1, -1]
+
+    mock_tree1 = mm.MockTree(features1, threshold1, values1, children_left1, children_right1)
+    mock_tree2 = mm.MockTree(features2, threshold2, values2, children_left2, children_right2)
+
+    forest_estimators = [mock_tree1, mock_tree2]
+
+    model = mm.MockForest(forest_estimators, classes)
+
+    feature_names = ['x0', 'x1', 'x2']
+
+    return model, feature_names
 
 def get_features(model, feature_names):
     """
@@ -74,6 +172,7 @@ def create_variables(feature):
     counter = 0
     variables = dict()
     tresh_to_var = dict()
+    feature_intervals_names = []
 
     for key, values in feature.items():
         values.sort()
@@ -82,13 +181,20 @@ def create_variables(feature):
         if len(values) == 1:
             counter += 1
             variables[key] = create_binary(tresh_to_var, key, counter)
+            feature_intervals_names.append([counter, -counter])
 
         else:
             counter += 1
             variables[key] = create_real_value(values, tresh_to_var, key, counter)
+            feature_intervals_names.append(feature_intervals(values,counter))
             counter += len(values) + len(values)
 
     return variables, tresh_to_var, counter
+
+def feature_intervals(values, counter):
+    n_thresholds = len(values)
+    var_intervals = list(range(counter + n_thresholds, counter + n_thresholds + n_thresholds + 1))
+    return var_intervals
 
 
 def create_binary(tresh_to_var, key, counter):
@@ -174,7 +280,7 @@ def create_class_vars(model, last_var):
     model : sklearn.ensemble.RandomForestClassifier
         The random forest model
     last_var : int
-        integer value related to the last defined variable
+        integer value related to the last defined variable, it's the counter of the function create_variables
 
     Returns
     -------
@@ -191,6 +297,10 @@ def create_class_vars(model, last_var):
         for j in range(n_classes):
             vars[i].append(last_var + 1)
             last_var += 1
+
+    global v_pool_max
+    v_pool_max = max(max(value) for value in vars.values())
+
     return vars
 
 
@@ -342,6 +452,7 @@ def encode_thresholds_and_intervals(features_thresholds_and_intervals):
     forest_cnf_paths : pysat.formula.CNF list
         list of pysat.formula.CNF objects representing the correspondence between thresholds vars and interval vars
     """
+
     cnf_threshold_and_intervals = []
     for single_feature_vars in features_thresholds_and_intervals.values():
         for thresh_var, intervals in single_feature_vars.items():
@@ -411,10 +522,18 @@ def encode_card_net_constr(class_vars):
         random forest
     """
 
+    global v_pool_max
+
     forest_card_net_constr = []
     for tree_classes in class_vars.values():
-        tree_card_net_constr = CardEnc.equals(lits=tree_classes, bound=1)
+        tree_card_net_constr = CardEnc.equals(lits=tree_classes, bound=1, top_id=v_pool_max)
+        if v_pool_max < tree_card_net_constr.nv:
+            v_pool_max = tree_card_net_constr.nv
         forest_card_net_constr.append(tree_card_net_constr)
+
+    for e in forest_card_net_constr:
+        print(e.clauses)
+
     return forest_card_net_constr
 
 
@@ -441,11 +560,25 @@ def encode_majority_voting(predicted_class, class_vars):
     j = predicted_class
     n_classes = len(class_vars[0])
     constr_list = []
-    for k in range(n_classes):
-        if j != k:
-            constr_list.append(encode_mv(k, j, class_vars))
-    return constr_list
 
+    if n_classes == 2:             
+        correct_class = [-x[j] for x in class_vars.values()]
+        if len(class_vars) % 2 != 0:
+            u_bound = math.floor((len(class_vars) + 1 ) / 2)
+        else: 
+            if j == 0:
+                u_bound = math.floor(len(class_vars)/2) 
+            else: 
+                u_bound = math.floor((len(class_vars) + 1 ) / 2)
+        constr_list.append(CardEnc.atleast(lits=correct_class, bound=u_bound, top_id=100))
+        return constr_list
+        
+    else:
+        for k in range(n_classes):
+            if j != k:
+                constr_list.append(encode_mv(k, j, class_vars))
+        return constr_list
+    
 
 def encode_mv(k, j, class_vars):
     """
@@ -471,6 +604,14 @@ def encode_mv(k, j, class_vars):
     # lhs -> left-hand side
     # rhs -> right-hand side
 
+    print("encode_mv")
+    print("sono il massimo")
+
+    global v_pool_max
+
+    print(v_pool_max)
+
+
     M = len(class_vars)
     ik = []
     lhs_ij = []
@@ -485,28 +626,39 @@ def encode_mv(k, j, class_vars):
         lhs_ik_weights.append(1)
         lhs_ij_weights.append(-1)
         rhs_weights.append(1)
-
+    
     lhs_lits = ik + lhs_ij
     rhs_lits = ik + rhs_ij
     lhs_weights = lhs_ik_weights + lhs_ij_weights
     rhs_weights = rhs_weights + rhs_weights
 
+    last_var = max(lhs_lits)
+
     # left-hand side of the double implication
     lhs = PBEnc.atleast(lits=lhs_lits, weights=lhs_weights, bound=1)
-    last_var = lhs.nv
+    if lhs.nv > v_pool_max:
+        v_pool_max = lhs.nv
+    print("lhs_list")
+    print(lhs_lits)
+    print(lhs.clauses)
+    # nv restituisce il numero totale di variabili coinvolte nell'oggetto lhs
 
     # right-hand side of the double implication
+    # formula (5)
     if k < j:
-        rhs = PBEnc.atleast(lits=rhs_lits, weights=rhs_weights, bound=M, top_id=last_var)
+        rhs = PBEnc.atleast(lits=rhs_lits, weights=rhs_weights, bound=M, top_id=v_pool_max)
+    # formula (6)    
     elif j < k:
-        rhs = PBEnc.atleast(lits=rhs_lits, weights=rhs_weights, bound=(M + 1), top_id=last_var)
+        rhs = PBEnc.atleast(lits=rhs_lits, weights=rhs_weights, bound=(M + 1), top_id=v_pool_max)
+    print("rhs_list")
+    print(rhs_lits)    
+    print(rhs.clauses)
 
-    if rhs.nv > last_var:
-        last_var = rhs.nv
-
+      
+    if rhs.nv > v_pool_max:
+        v_pool_max = rhs.nv
     # apply double implication and get majority voting formula
-    mv_formula = double_implication(lhs, rhs, last_var)
-
+    mv_formula = double_implication(lhs, rhs, last_var=last_var)
     return mv_formula
 
 
@@ -529,12 +681,28 @@ def double_implication(lhs, rhs, last_var):
         CNF encoding of the double implication
     """
 
+    global v_pool_max
+
+    print("double_implication")
+    
+    
+
     # F1 <-> F2
     # (_F1 or F2) and (_F2 or F1)
     final_cnf = CNF()
     first_implication = disjunction(lhs.negate(topv=last_var), rhs)
+    print("lhs")
+    print(lhs.negate(topv=last_var).clauses)
+    if lhs.negate(topv=last_var).nv > v_pool_max:
+        v_pool_max = lhs.negate(topv=last_var).nv
+    print(v_pool_max)
     second_implication = disjunction(rhs.negate(topv=last_var), lhs)
+    print("rhs")
+    print(rhs.negate(topv=last_var).clauses)
+    if rhs.negate(topv=last_var).nv > v_pool_max:
+        v_pool_max = rhs.negate(topv=last_var).nv
     final_cnf.extend(first_implication.clauses + second_implication.clauses)
+    #print(final_cnf.clauses)
     return final_cnf
 
 
@@ -563,7 +731,7 @@ def disjunction(f1, f2):
     return final_cnf
 
 
-def final_encoding(cnf_paths, cnf_thresholds_and_intervals, cnf_card_net_constr, cnf_majority_voting_constr):
+def final_encoding(cnf_paths, cnf_thresholds_and_intervals, cnf_majority_voting_constr, cnf_card_net_constr=[]):
     """
     Encode the entire random forest putting all together as explained in "On Explaining Random Forests with SAT" by
     Yacine Izza and Joao Marques-Silva
@@ -593,10 +761,133 @@ def final_encoding(cnf_paths, cnf_thresholds_and_intervals, cnf_card_net_constr,
     for formula in cnf_thresholds_and_intervals:
         total_formula.extend(formula.clauses)
 
-    for card_net_constr in cnf_card_net_constr:
-        total_formula.extend(card_net_constr)
+    if len(cnf_card_net_constr) > 0:
+        for card_net_constr in cnf_card_net_constr:
+            total_formula.extend(card_net_constr)
 
     for majority_voting_constr in cnf_majority_voting_constr:
         total_formula.extend(majority_voting_constr)
 
     return total_formula
+
+
+def compute_muses(instance_v, s1):
+    """
+    Computes the muses for the case of a model with only two classes
+
+    Parameters
+    ----------
+    instance_v : list
+        list of the choosen instance v
+    s1 : Solver
+        the solver with all the clauses    
+    
+
+    Returns
+    -------
+    axp : list
+        list of the minimal set of feature AXp  
+    """    
+
+    i = 0
+    axp = copy.deepcopy(instance_v)
+    X = copy.deepcopy(instance_v)
+    while i < len(instance_v):         
+        X = instance_v[:i] + instance_v[(i + 1):]
+        if not s1.solve(assumptions=X):
+            instance_v = instance_v[:i] + instance_v[(i + 1):]
+            axp = instance_v
+            print("UNSAT: " + str(axp) + " è un candidato per essere AXp")
+            if len(instance_v)==1:
+                break
+        else:
+            print("SAT: " + str(X))
+            i += 1
+        
+    print("L'AXp finale è: " + str(axp)) 
+
+    return axp
+
+
+
+def create_solver(model, feature_names, mock_predicted_class):
+    split = get_features(model, feature_names)
+
+    variables, tresh_to_var, counter = create_variables(split)
+
+    vars = create_class_vars(model, counter)
+
+    forest_cnf_paths = encode_paths(model, feature_names, split, tresh_to_var, vars)
+
+    cnf_thresholds_and_intervals = encode_thresholds_and_intervals(variables)
+
+    constr_list = encode_majority_voting(mock_predicted_class, vars) 
+
+    forest_card_net_constr = encode_card_net_constr(vars)
+
+    total_formula = final_encoding(forest_cnf_paths, cnf_thresholds_and_intervals, constr_list, forest_card_net_constr)
+
+    s1 = Solver(name='g3')
+    for clause in total_formula.clauses:
+        s1.add_clause(clause)   
+    
+    '''
+    s1.add_clause([12, 13, 14])
+    s1.add_clause([-12, 200])
+    s1.add_clause([-200, 210])
+    s1.add_clause([-13, -200])
+    s1.add_clause([-13, 210])
+    s1.add_clause([-14, -210])
+
+    s1.add_clause([15, 16, 17])
+    s1.add_clause([-15, 180])
+    s1.add_clause([-180, 190])
+    s1.add_clause([-16, -180])
+    s1.add_clause([-16, 190])
+    s1.add_clause([-17, -190])
+    '''
+
+    return s1   
+
+    
+def muses_mock_model():
+    instance_v = [1,4,9] # v=(1,4,11) tau_v=0
+    #instance_v = [1,4,10] # v=(1,4,10) tau_v=0
+    #instance_v = [1,4,9] # v=(1,4,11) tau_v=0
+    #instance_v = [-1,4,11] # v=(1,4,11) tau_v=0
+    #instance_v = [1,6,9]  # v=(1,6,9) tau_v=1
+    instance_v = [-1,6,9] # v=(-1,6,9) tau_v=1
+    tau_v = 1
+
+    model, feature_names = create_mock_model()
+
+    s = create_solver(model, feature_names, tau_v)
+
+    if s.solve(assumptions=[-14, -12, 13]):
+        print("sat")
+    else:
+        print("unsat")    
+
+    compute_muses(instance_v, s)
+
+
+def muses_mock_model_paper():
+    instance_v = [1, -2, 3, -4]  # v=(1,0,1,70)=(1,-2,3,-4) tau_v=1
+    #instance_v = [-1, 2, -3, -4] # v=(0,1,0,70)=(-1,2,-3,-4) tau_v=0 
+    #instance_v = [1, -2, 3, 4] # v=(1,0,1,100)=(1,-2,3,4) tau_v=1
+    #instance_v = [1,2,-3,4] # v=(1,1,0,100)=(1,2,-3,4) tau_v=0
+
+    tau_v = 1
+
+    model, feature_names = create_mock_model_paper()
+
+    s = create_solver(model, feature_names, tau_v)
+
+    compute_muses(instance_v, s)
+
+
+
+if __name__ == '__main__':
+
+    muses_mock_model_paper()
+
