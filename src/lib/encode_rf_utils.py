@@ -16,7 +16,7 @@ from pysat.solvers import Solver
 import pysat
 import copy
 
-v_pool_max = 0
+top_var = 0
 
 
 def create_mock_model_paper():
@@ -298,8 +298,8 @@ def create_class_vars(model, last_var):
             vars[i].append(last_var + 1)
             last_var += 1
 
-    global v_pool_max
-    v_pool_max = max(max(value) for value in vars.values())
+    global top_var
+    top_var = max(max(value) for value in vars.values())
 
     return vars
 
@@ -522,17 +522,14 @@ def encode_card_net_constr(class_vars):
         random forest
     """
 
-    global v_pool_max
+    global top_var
 
     forest_card_net_constr = []
     for tree_classes in class_vars.values():
-        tree_card_net_constr = CardEnc.equals(lits=tree_classes, bound=1, top_id=v_pool_max)
-        if v_pool_max < tree_card_net_constr.nv:
-            v_pool_max = tree_card_net_constr.nv
+        tree_card_net_constr = CardEnc.equals(lits=tree_classes, bound=1, top_id=top_var)
+        if top_var < tree_card_net_constr.nv:
+            top_var = tree_card_net_constr.nv
         forest_card_net_constr.append(tree_card_net_constr)
-
-    for e in forest_card_net_constr:
-        print(e.clauses)
 
     return forest_card_net_constr
 
@@ -557,6 +554,7 @@ def encode_majority_voting(predicted_class, class_vars):
     """
 
     # using the same indexes as the reference paper
+    global top_var
     j = predicted_class
     n_classes = len(class_vars[0])
     constr_list = []
@@ -570,7 +568,7 @@ def encode_majority_voting(predicted_class, class_vars):
                 u_bound = math.floor(len(class_vars)/2) 
             else: 
                 u_bound = math.floor((len(class_vars) + 1 ) / 2)
-        constr_list.append(CardEnc.atleast(lits=correct_class, bound=u_bound, top_id=100))
+        constr_list.append(CardEnc.atleast(lits=correct_class, bound=u_bound, top_id=top_var))
         return constr_list
         
     else:
@@ -604,13 +602,7 @@ def encode_mv(k, j, class_vars):
     # lhs -> left-hand side
     # rhs -> right-hand side
 
-    print("encode_mv")
-    print("sono il massimo")
-
-    global v_pool_max
-
-    print(v_pool_max)
-
+    global top_var
 
     M = len(class_vars)
     ik = []
@@ -636,27 +628,19 @@ def encode_mv(k, j, class_vars):
 
     # left-hand side of the double implication
     lhs = PBEnc.atleast(lits=lhs_lits, weights=lhs_weights, bound=1)
-    if lhs.nv > v_pool_max:
-        v_pool_max = lhs.nv
-    print("lhs_list")
-    print(lhs_lits)
-    print(lhs.clauses)
-    # nv restituisce il numero totale di variabili coinvolte nell'oggetto lhs
+    if lhs.nv > top_var:
+        top_var = lhs.nv
 
     # right-hand side of the double implication
     # formula (5)
     if k < j:
-        rhs = PBEnc.atleast(lits=rhs_lits, weights=rhs_weights, bound=M, top_id=v_pool_max)
+        rhs = PBEnc.atleast(lits=rhs_lits, weights=rhs_weights, bound=M, top_id=top_var)
     # formula (6)    
     elif j < k:
-        rhs = PBEnc.atleast(lits=rhs_lits, weights=rhs_weights, bound=(M + 1), top_id=v_pool_max)
-    print("rhs_list")
-    print(rhs_lits)    
-    print(rhs.clauses)
-
+        rhs = PBEnc.atleast(lits=rhs_lits, weights=rhs_weights, bound=(M + 1), top_id=top_var)
       
-    if rhs.nv > v_pool_max:
-        v_pool_max = rhs.nv
+    if rhs.nv > top_var:
+        top_var = rhs.nv
     # apply double implication and get majority voting formula
     mv_formula = double_implication(lhs, rhs, last_var=last_var)
     return mv_formula
@@ -681,28 +665,19 @@ def double_implication(lhs, rhs, last_var):
         CNF encoding of the double implication
     """
 
-    global v_pool_max
-
-    print("double_implication")
-    
-    
-
     # F1 <-> F2
     # (_F1 or F2) and (_F2 or F1)
+
+    global top_var    
+
     final_cnf = CNF()
     first_implication = disjunction(lhs.negate(topv=last_var), rhs)
-    print("lhs")
-    print(lhs.negate(topv=last_var).clauses)
-    if lhs.negate(topv=last_var).nv > v_pool_max:
-        v_pool_max = lhs.negate(topv=last_var).nv
-    print(v_pool_max)
+    if lhs.negate(topv=last_var).nv > top_var:
+        top_var = lhs.negate(topv=last_var).nv
     second_implication = disjunction(rhs.negate(topv=last_var), lhs)
-    print("rhs")
-    print(rhs.negate(topv=last_var).clauses)
-    if rhs.negate(topv=last_var).nv > v_pool_max:
-        v_pool_max = rhs.negate(topv=last_var).nv
+    if rhs.negate(topv=last_var).nv > top_var:
+        top_var = rhs.negate(topv=last_var).nv
     final_cnf.extend(first_implication.clauses + second_implication.clauses)
-    #print(final_cnf.clauses)
     return final_cnf
 
 
@@ -731,7 +706,7 @@ def disjunction(f1, f2):
     return final_cnf
 
 
-def final_encoding(cnf_paths, cnf_thresholds_and_intervals, cnf_majority_voting_constr, cnf_card_net_constr=[]):
+def final_encoding(cnf_paths, cnf_thresholds_and_intervals, cnf_majority_voting_constr, cnf_card_net_constr):
     """
     Encode the entire random forest putting all together as explained in "On Explaining Random Forests with SAT" by
     Yacine Izza and Joao Marques-Silva
@@ -760,10 +735,9 @@ def final_encoding(cnf_paths, cnf_thresholds_and_intervals, cnf_majority_voting_
 
     for formula in cnf_thresholds_and_intervals:
         total_formula.extend(formula.clauses)
-
-    if len(cnf_card_net_constr) > 0:
-        for card_net_constr in cnf_card_net_constr:
-            total_formula.extend(card_net_constr)
+    
+    for card_net_constr in cnf_card_net_constr:
+        total_formula.extend(card_net_constr)
 
     for majority_voting_constr in cnf_majority_voting_constr:
         total_formula.extend(majority_voting_constr)
@@ -771,9 +745,10 @@ def final_encoding(cnf_paths, cnf_thresholds_and_intervals, cnf_majority_voting_
     return total_formula
 
 
-def compute_muses(instance_v, s1):
+def compute_muses(instance_v, s):
     """
-    Computes the muses for the case of a model with only two classes
+    Computes the muses as explained in "On Explaining Random Forests with SAT" by
+    Yacine Izza and Joao Marques-Silva
 
     Parameters
     ----------
@@ -794,17 +769,18 @@ def compute_muses(instance_v, s1):
     X = copy.deepcopy(instance_v)
     while i < len(instance_v):         
         X = instance_v[:i] + instance_v[(i + 1):]
-        if not s1.solve(assumptions=X):
+        if not s.solve(assumptions=X):
             instance_v = instance_v[:i] + instance_v[(i + 1):]
             axp = instance_v
-            print("UNSAT: " + str(axp) + " è un candidato per essere AXp")
+            i=0
+            print("UNSAT: " + str(axp) + " is an AXp candidate")
             if len(instance_v)==1:
                 break
         else:
             print("SAT: " + str(X))
             i += 1
-        
-    print("L'AXp finale è: " + str(axp)) 
+       
+    print("The final AXp is: " + str(axp)) 
 
     return axp
 
@@ -827,27 +803,11 @@ def create_solver(model, feature_names, mock_predicted_class):
 
     total_formula = final_encoding(forest_cnf_paths, cnf_thresholds_and_intervals, constr_list, forest_card_net_constr)
 
-    s1 = Solver(name='g3')
+    s = Solver(name='g3')
     for clause in total_formula.clauses:
-        s1.add_clause(clause)   
-    
-    '''
-    s1.add_clause([12, 13, 14])
-    s1.add_clause([-12, 200])
-    s1.add_clause([-200, 210])
-    s1.add_clause([-13, -200])
-    s1.add_clause([-13, 210])
-    s1.add_clause([-14, -210])
+        s.add_clause(clause)   
 
-    s1.add_clause([15, 16, 17])
-    s1.add_clause([-15, 180])
-    s1.add_clause([-180, 190])
-    s1.add_clause([-16, -180])
-    s1.add_clause([-16, 190])
-    s1.add_clause([-17, -190])
-    '''
-
-    return s1   
+    return s   
 
     
 def muses_mock_model():
@@ -863,28 +823,22 @@ def muses_mock_model():
 
     s = create_solver(model, feature_names, tau_v)
 
-    if s.solve(assumptions=[-14, -12, 13]):
-        print("sat")
-    else:
-        print("unsat")    
-
     compute_muses(instance_v, s)
 
 
 def muses_mock_model_paper():
-    instance_v = [1, -2, 3, -4]  # v=(1,0,1,70)=(1,-2,3,-4) tau_v=1
-    #instance_v = [-1, 2, -3, -4] # v=(0,1,0,70)=(-1,2,-3,-4) tau_v=0 
-    #instance_v = [1, -2, 3, 4] # v=(1,0,1,100)=(1,-2,3,4) tau_v=1
-    #instance_v = [1,2,-3,4] # v=(1,1,0,100)=(1,2,-3,4) tau_v=0
+    instance_v = [1, -2, 3, -4]  # v=(1,0,1,70)=(1,-2,3,-4) tau_v=1 axp=[1,3]
+    #instance_v = [-1, 2, -3, -4] # v=(0,1,0,70)=(-1,2,-3,-4) tau_v=0 axp=[-3]
+    #instance_v = [1, -2, 3, 4] # v=(1,0,1,100)=(1,-2,3,4) tau_v=1 axp=[-2,3,4]
+    #instance_v = [1,2,-3,4] # v=(1,1,0,100)=(1,2,-3,4) tau_v=0 axp=[-3]
 
     tau_v = 1
-
+    
     model, feature_names = create_mock_model_paper()
 
     s = create_solver(model, feature_names, tau_v)
 
     compute_muses(instance_v, s)
-
 
 
 if __name__ == '__main__':
