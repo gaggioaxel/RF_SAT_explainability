@@ -1,0 +1,44 @@
+\begin{frame}{Introduction}
+    \begin{block}{Goals}
+        \begin{itemize}
+            \item Compute the MUSes extraction as explained in On Explaining Random Forests with SAT paper by Yacine Izza and Joao Marques-Silva
+            \item Implement a method to manipulate auxiliary variables introduced during the encoding process to make sure there is no collision between identifiers of the variables
+            \item Implement a method to differentiate the majority voting encoding in the case with two classes and in the case with more classes
+        \end{itemize}
+    \end{block}
+    \vfill
+    \begin{center}
+        \fontsize{7}{10}\selectfont
+        \textbf{GITHUB REPOSITORY}\\
+        \url{https://github.com/yizza91/RFxpl}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Introduction}
+    \begin{block}{Proposed Paper}
+    %\fontsize{7}{10}\selectfont
+        \begin{itemize}
+            \item Brief introduction to ML Classification, Decision Trees and Random Forest Classifiers
+            \item Answers the question of whether finding explanations of RFs can be solved in polynomial time negatively, by proving that deciding whether a set of literals is a PI-explanation of an RF is DP-complete
+            \item Proposes a propositional encoding for computing explanations of RFs, thus enabling finding PI-explanations with a SAT solver
+            \item Experimental findings, derived from an extensive array of publicly accessible datasets, highlight a substantial performance improvement in the proposed SAT-based method compared to existing heuristic approaches
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Introduction}
+    \begin{block}{Symbology}
+        \begin{itemize}
+            \item \(\mathcal{F}\) = \( \{ 1, ..., m \} \) is the set of features
+            \item \(\mathcal{K}\) = \( \{ c_{1}, ..., c_{K} \} \) is the set of classes
+            \item $\mathbf{x}$ = \( \{ x_{1}, ..., x_{m} \} \) is an arbitrary point in the feature space $\mathbb{F}$
+            \item $\mathbf{v}$ = \( \{ v_{1}, ..., v_{m} \} \) is an specific point in the feature space $\mathbb{F}$
+            \item A pair ($\mathbf{v}$, c) is an instance where $\mathbf{v} \in \mathbb{F}$ and c $\in \mathcal{K}$
+            \item M is the number of trees of the Random Forest
+            \item $\mathcal{T}_{i}$ is the \textit{i}-th tree
+            \item $l_{ik}$ is the classification $c_{k}$ for the \textit{i}-th tree
+            \item \(\mathcal{R}_{i}\) is the set of paths of \(\mathcal{T}_{i}\)
+            \item R$_{k}$ is the $k$-th path of a set \(\mathcal{R}_{i}\)
+        \end{itemize}
+    \end{block}
+\end{frame}

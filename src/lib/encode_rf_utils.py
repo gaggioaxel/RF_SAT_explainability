@@ -789,11 +789,11 @@ def compute_muses(instance_v, s):
 def create_solver(model, feature_names, mock_predicted_class):
     split = get_features(model, feature_names)
 
-    variables, tresh_to_var, counter = create_variables(split)
+    variables, thresh_to_var, counter = create_variables(split)
 
     vars = create_class_vars(model, counter)
 
-    forest_cnf_paths = encode_paths(model, feature_names, split, tresh_to_var, vars)
+    forest_cnf_paths = encode_paths(model, feature_names, split, thresh_to_var, vars)
 
     cnf_thresholds_and_intervals = encode_thresholds_and_intervals(variables)
 

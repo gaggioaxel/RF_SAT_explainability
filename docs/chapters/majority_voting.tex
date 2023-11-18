@@ -1,0 +1,48 @@
+\begin{frame}{Majority Voting}
+    \begin{block}{Definition}
+    The prediction function in RF works by majority vote, that is each tree votes for a class and the most voted class is picked. \\
+    In case of ties, for simplicity we will pick the lexicographical smallest class.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Majority Voting Encoding}
+    \begin{block}{Standard case $\textit{K}>2$}
+    The Majority Voting encoding requires the use of \texit{K}-1 cardinality constraints, each comparing the counts of $c_{j}$ with the counts of some other $c_{k}$, considering $c_{k}$ as the class predicted by the RF for the instance $\mathbf{v}$.\\
+
+    \begin{itemize}
+        \item for $i \leq k < j \leq K$, $c_{k}$ is selected over $c_{j}$ if:
+        \begin{equation*}
+            \sum_{i=1}^{M} l_{ik} > \sum_{i=1}^{M} l_{ij} \iff \sum_{i=1}^{M} l_{ik} + \sum_{i=1}^{M} \neg l_{ij} \geq M
+        \end{equation*}
+        \item for $i \leq j < k \leq K$, $c_{k}$ is selected over $c_{j}$ if:
+        \begin{equation*}
+            \sum_{i=1}^{M} l_{ik} > \sum_{i=1}^{M} l_{ij} \iff \sum_{i=1}^{M} l_{ik} + \sum_{i=1}^{M} \neg l_{ij} \geq M+1
+        \end{equation*}
+    \end{itemize}
+    \end{block}
+\end{frame}
+
+
+\begin{frame}{Majority Voting Encoding}
+    \small
+    \begin{block}{Special case $\textit{K}=2$}
+    The Majority Voting encoding for $\textit{K}=2$ is a special case because:
+    \begin{equation*}
+        \footnotesize
+            \sum_{i=1}^{M} l_{ik} = \sum_{i=1}^{M} \neg l_{ij} 
+    \end{equation*}
+    The right hand side of the standard case becomes simpler:
+    \begin{itemize}
+        \item for $i \leq k < j \leq K$, $c_{k}$ is selected over $c_{j}$ if:
+        \begin{equation*}
+            \footnotesize
+            \sum_{i=1}^{M} \neg l_{ij} \geq \frac{M+1}{2}
+        \end{equation*}
+        \item for $i \leq j < k \leq K$, $c_{k}$ is selected over $c_{j}$ if:
+        \begin{equation*}
+            \footnotesize
+            \sum_{i=1}^{M} \neg l_{ij} \geq \frac{M+1}{2}
+        \end{equation*}
+    \end{itemize}
+    \end{block}
+\end{frame}

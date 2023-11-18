@@ -1,0 +1,1042 @@
+\begin{frame}{Heart Disease Example - Context}
+    \footnotesize
+    \begin{block}{RF Running example}
+        \begin{center}
+        \begin{tabular}{|>{\centering \arraybackslash}p{2cm}||>{\centering \arraybackslash}p{5cm}|}
+            \hline
+            Paper Variable & Description\\
+            \hline
+            $l_{i2}$ & i-th Decision Tree answered “Yes” \\
+            $l_{i1}$ & i-th Decision Tree answered “No”\\
+            $x_{1}$ & “Blocked Arteries” \\
+            $x_{2}$ & “Good-Blood Circulation”\\
+            $x_{3}$ & “Chest-Pain”\\
+            $w$ & “weight \(>\) 75”\\
+            \hline
+        \end{tabular}
+        \begin{center}
+            \begin{minipage}{0.175\linewidth}
+                \includegraphics[width=\textwidth]{resources/RF_1.png}
+            \end{minipage}
+            \hspace{8pt}
+            \begin{minipage}{0.175\linewidth}
+                \includegraphics[width=\textwidth]{resources/RF_2.png}
+            \end{minipage}
+            \hspace{8pt}
+            \begin{minipage}{0.265\linewidth}
+                \includegraphics[width=\textwidth]{resources/RF_3.png}
+            \end{minipage}
+        \end{center}
+        The instance $\textbf{v} = ((1,0,1,70), Yes)$ results in the soft clauses: $\{\lnot x_{1}\},\{ x_{2}\},\{ \lnot x_{3}\},\{ w\}$
+        \vspace{2pt}
+        \end{center}
+    \end{block}
+\end{frame}
+
+
+
+\begin{frame}{Heart Disease Example - Step 0}
+    \centering
+    \fontsize{8pt}{1pt}\selectfont 
+    \linespread{0.6}
+    \begin{minipage}[t]{0.22\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{0pt}\selectfont \textbf{Paths}}
+            \linespread{0.1}
+            \[\{l_{12} , x_{1} , x_{3}\},\]
+            \linespread{0.2}
+            
+            \[\{l_{11} , x_{1} , \lnot x_{3}\},\]
+            
+            \[\{l_{11} , \lnot x_{1}\},\]
+            
+            \[\{l_{21} , x_{2}\},\]
+            
+            \[\{l_{22} , \lnot x_{2}  , w\},\]
+            
+            \[\{l_{21} , \lnot x_{2}  , \lnot w\},\]
+            
+            \[\{l_{32} , x_{2} , x_{1}\},\]
+            
+            \[\{l_{31} , x_{2} , \lnot x_{1}\},\]
+            
+            \[\{l_{32} , \lnot x_{2} , x_{3}\},\]
+            
+            \[\{l_{31} , \lnot x_{2} , \lnot x_{3}\},\]
+            \vspace{2pt}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.19\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Cardinality Network}}
+            \linespread{0.3}
+            \[\{l_{11} , l_{12}\},\]
+            
+            \[\{\lnot l_{11} , \lnot l_{12}\},\]
+            
+            \[\{l_{21} , l_{22}\},\]
+            
+            \[\{\lnot l_{21} , \lnot l_{22}\},\]
+            
+            \[\{l_{31} , l_{32}\},\]
+            
+            \[\{\lnot l_{31} , \lnot l_{32}\},\]
+            \vspace{2pt}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.18\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Majority \\ Voting}}
+            \linespread{0.1}
+            \[\{\lnot l_{12} , aux_{1}\},\]
+            \linespread{0.3}
+            
+            \[\{\lnot aux_{1}, aux_{2}\},\]
+            
+            \[\{\lnot l_{22} , \lnot aux_{1}\},\]
+            
+            \[\{\lnot l_{22} , aux_{2}\},\]
+            
+            \[\{\lnot l_{32} , \lnot aux_{2}\},\]
+            \vspace{2pt}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.12\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Soft Clauses}}
+            \linespread{0.3}
+            \[\{\lnot x_{1}\},\]
+            
+            \[\{x_{2}\},\]
+            
+            \[\{\lnot x_{3}\},\]
+            
+            \[\{w\}\]
+        \end{block}
+        \vspace{10pt}
+        \begin{block}{\centering \fontsize{8.5pt}{1pt}\selectfont \textbf{Implicit Clauses}}
+            \vspace{5pt}
+        \end{block}
+    \end{minipage}
+\end{frame}
+
+
+\begin{frame}{Heart Disease Example - Step 1}
+    \centering
+    \fontsize{8pt}{1pt}\selectfont 
+    \linespread{0.6}
+    \begin{minipage}[t]{0.22\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{0pt}\selectfont \textbf{Paths}}
+            \linespread{0.1}
+            \only<1>{\[\{l_{12} , x_{1} , x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{12} , \textcolor[HTML]{008000}{\bm{x_{1}}} , \textcolor{red}{\bm{x_{3}}}\},\)}\]}
+            \only<1>{\linespread{0.3}}
+            \only<2>{\linespread{0.1}}
+            \only<3->{\linespread{0}}
+            
+            \only<1>{\[\{l_{11} , x_{1} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{11} , \textcolor[HTML]{008000}{\bm{x_{1}}} , \textcolor[HTML]{008000}{\bm{\lnot x_{3}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{11} , \lnot x_{1}\},\]}
+            \only<2>{\[\{l_{11} , \textcolor{red}{\bm{\lnot x_{1}}}\},\]}
+            \only<3->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{11}}} , \textcolor{red}{\bm{\lnot x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , x_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{21} , \textcolor[HTML]{008000}{\bm{x_{2}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{22} , \lnot x_{2}  , w\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{22} , \textcolor{red}{\bm{\lnot x_{2}}}  , \textcolor[HTML]{008000}{\bm{w}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , \lnot x_{2}  , \lnot w\},\]}
+            \only<2>{\[\{l_{21} , \textcolor{red}{\bm{\lnot x_{2}}}  , \textcolor{red}{\bm{\lnot w}}\},\]}
+            \only<3->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{21}}} , \textcolor{red}{\bm{\lnot x_{2}}}  , \textcolor{red}{\bm{\lnot w}}\},\)}\]}
+            
+            \only<1>{\[\{l_{32} , x_{2} , x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{32} , \textcolor[HTML]{008000}{\bm{x_{2}}} , \textcolor[HTML]{008000}{\bm{x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , x_{2} , \lnot x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{31} , \textcolor[HTML]{008000}{\bm{x_{2}}} , \textcolor{red}{\bm{\lnot x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{32} , \lnot x_{2} , x_{3}\},\]}
+            \only<2>{\[\{l_{32} , \textcolor{red}{\bm{\lnot x_{2}}} , \textcolor{red}{\bm{x_{3}}}\},\]}
+            \only<3->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{32}}} , \textcolor{red}{\bm{\lnot x_{2}}} , \textcolor{red}{\bm{x_{3}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , \lnot x_{2} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{31} , \textcolor{red}{\bm{\lnot x_{2}}} , \textcolor[HTML]{008000}{\bm{\lnot x_{3}}}\},\)}\]}
+            \only<1>{\vspace{2pt}}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.19\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Cardinality Network}}
+            \only<1-2>{\linespread{0.5}}
+            \only<3>{\linespread{0.3}}
+            \only<4->{\linespread{0.15}}
+            \only<1-2>{\[\{l_{11} , l_{12}\},\]}
+            \only<3->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{11}}} , l_{12}\},\)}\]}
+            
+            \only<1-2>{\[\{\lnot l_{11} , \lnot l_{12}\},\]}
+            \only<3>{\[\{\textcolor{red}{\bm{\lnot l_{11}}} , \lnot l_{12}\},\]}
+            \only<4->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{11}}} , \textcolor[HTML]{008000}{\bm{\lnot l_{12}}}\},\)}\]}
+            
+            \only<1-2>{\[\{l_{21} , l_{22}\},\]}
+            \only<3->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{21}}} , l_{22}\},\)}\]}
+            
+            \only<1-2>{\[\{\lnot l_{21}, \lnot l_{22}\},\]}
+            \only<3>{\[\{\textcolor{red}{\bm{\lnot l_{21}}} , \lnot l_{22}\},\]}
+            \only<4->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{21}}} , \textcolor[HTML]{008000}{\bm{\lnot l_{22}}}\},\)}\]}
+            
+            \only<1-2>{\[\{l_{31} , l_{32}\},\]}
+            \only<3->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{31} , \textcolor[HTML]{008000}{\bm{l_{32}}}\},\)}\]}
+            
+            \only<1-2>{\[\{\lnot l_{31} , \lnot l_{32}\},\]}
+            \only<3>{\[\{\lnot l_{31} , \textcolor{red}{\bm{\lnot l_{32}}}\},\]}
+            \only<4->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{31}}} , \textcolor{red}{\bm{\lnot l_{32}}}\},\)}\]}
+            \vspace{2pt}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.18\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Majority \\ Voting}}
+            \linespread{0.1}
+            \only<1-3>{\[\{\lnot l_{12} , aux_{1}\},\]}
+            \only<4->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{12}}} , aux_{1}\},\)}\]}
+            \only<1-3>{\linespread{0.5}}
+            \only<4>{\linespread{0.2}}
+            \only<5>{\linespread{0.1}}
+            
+            \only<1-3>{\[\{\lnot aux_{1}, aux_{2}\},\]}
+            \only<4>{\[\{\lnot aux_{1}, \textcolor{red}{\bm{aux_{2}}}\},\]}
+            \only<5->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot aux_{1}}}, \textcolor{red}{\bm{aux_{2}}}\},\)}\]}
+            
+            \only<1-3>{\[\{\lnot l_{22} , \lnot aux_{1}\},\]}
+            \only<4->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{22}}} , \lnot aux_{1}\},\)}\]}
+            
+            \only<1-3>{\[\{\lnot l_{22} , aux_{2}\},\]}
+            \only<4->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{22}}} , \textcolor{red}{\bm{aux_{2}}}\},\)}\]}
+            
+            \only<1-2>{\[\{\lnot l_{32} , \lnot aux_{2}\},\]}
+            \only<3>{\[\{\textcolor{red}{\bm{\lnot l_{32}}} , \lnot aux_{2}\},\]}
+            \only<4->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{32}}} , \textcolor[HTML]{008000}{\bm{\lnot aux_{2}}}\},\)}\]}
+            \vspace{1pt}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.12\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Soft Clauses}}
+            \only<1>{\linespread{0.2}}
+            \only<2->{\linespread{0}}
+            \only<1>{\vspace{1}\[\{x_{2}\},\]\vspace{1}}
+            \only<2->{\begin{align} \colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\textbf{\[\{\bm{x_{2}}\},\]}}\)} \end{align}}
+            
+            \only<1>{\linespread{0.1}}
+            \only<2->{\linespread{0}}
+            \only<1>{\vspace{1}\[\{\lnot x_{3}\},\]\vspace{1}}
+            \only<2->{\begin{align} \colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\textbf{\[\{\bm{\lnot x_{3}}\},\]}}\)} \end{align}}
+            
+            \only<1>{\vspace{1}\[\{w\},\]\vspace{1}}
+            \only<2->{\begin{align} \colorbox[HTML]{C8FAC8}{\(\textbf{\color[HTML]{008000}{\[\{\bm{w}\},\]}}\)} \end{align}}
+            \vspace{1pt}
+        \end{block}
+        \vspace{25pt}
+        \begin{block}{\centering \fontsize{8.5pt}{1pt}\selectfont \textbf{Implicit Clauses}}
+            \linespread{0.1}
+            \only<1>{\[\{x_{1}\}\]}
+            \only<2->{\[\begin{align} \colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{x_{1}}\}}\)}\] \end{align}}
+        \end{block}
+    \end{minipage}
+    \vspace{2pt}
+    \\
+    \only<1-4>{\textcolor{white}{The formula is \colorbox[HTML]{FFFFFF}{SATISFIABLE}: $(x_{2} \},\{ \lnot x_{3} \},\{ w)$ is not an AXp candidate\\}}
+    \only<5>{The formula is \colorbox[HTML]{C8FAC8}{SATISFIABLE}: $\{x_{2} \},\{ \lnot x_{3} \},\{ w\}$ is not an AXp candidate\\}
+\end{frame}
+
+
+
+\begin{frame}{Heart Disease Example - Step 2}
+    \centering
+    \fontsize{8pt}{1pt}\selectfont 
+    \linespread{0.6}
+    \begin{minipage}[t]{0.22\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{0pt}\selectfont \textbf{Paths}}
+            \only<1-2>{\linespread{0.1}}
+            \only<3->{\linespread{0}}
+            \only<1>{\[\{l_{12} , x_{1} , x_{3}\},\]}
+            \only<2>{\[\{l_{12} , \textcolor{red}{\bm{x_{1}}} , \textcolor{red}{\bm{x_{3}}}\},\]}
+            \only<3->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{12}}} , \textcolor{red}{\bm{x_{1}}} , \textcolor{red}{\bm{x_{3}}}\},\)}\]}
+            \only<1>{\linespread{0.3}}
+            \only<2>{\linespread{0.1}}
+            \only<3->{\linespread{0}}
+            
+            \only<1>{\[\{l_{11} , x_{1} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{11} , \textcolor{red}{\bm{x_{1}}} , \textcolor[HTML]{008000}{\textbf{\[\bm{\lnot x_{3}}\]}}\},\)}\]}
+            
+            \only<1>{\[\{l_{11} , \lnot x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{11} , \textcolor[HTML]{008000}{\textbf{\[\bm{\lnot x_{1}}\]}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , x_{2}\},\]}
+            \only<2>{\[\{l_{21} , \textcolor{red}{\bm{x_{2}}}\},\]}
+            \only<3->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{21}}} , \textcolor{red}{\bm{x_{2}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{22} , \lnot x_{2} , w\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{22} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}}  , \textbf{\color[HTML]{008000}{\[\bm{w}\]}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , \lnot x_{2} , \lnot w\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{21} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}}  , \textcolor{red}{\bm{\lnot w}}\},\)}\]}
+            
+            \only<1>{\[\{l_{32} , x_{2} , x_{1}\},\]}
+            \only<2>{\[\{l_{32} , \textcolor{red}{\bm{x_{2}}} , \textcolor{red}{\bm{x_{1}}}\},\]}
+            \only<3->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{32}}} , \textcolor{red}{\bm{x_{2}}} , \textcolor{red}{\bm{x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , x_{2} , \lnot x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{31} , \textcolor{red}{\bm{x_{2}}} , \textcolor[HTML]{008000}{\textbf{\[\bm{\lnot x_{1}}\]}}\},\)}\]}
+            
+            \only<1>{\[\{l_{32} , \lnot x_{2} , x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{32} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}} , \textcolor{red}{\bm{x_{3}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , \lnot x_{2} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{31} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}} , \textcolor[HTML]{008000}{\textbf{\[\bm{\lnot x_{3}}\]}}\},\)}\]}
+            \only<1>{\vspace{2pt}}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.19\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Cardinality Network}}
+            \only<1-2>{\linespread{0.1}}
+            \only<3->{\linespread{0}}
+            \only<1-2>{\[\{l_{11} , l_{12}\},\]}
+            \only<3->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{11} , \textcolor[HTML]{008000}{\bm{l_{12}}}\},\)}\]}
+            \only<1-2>{\linespread{0.4}}
+            \only<3>{\linespread{0.2}}
+            \only<4->{\linespread{0}}
+            
+            \only<1-2>{\[\{\lnot l_{11} , \lnot l_{12}\},\]}
+            \only<3>{\vspace{1}\[\{\lnot l_{11} , \textcolor{red}{\bm{\lnot l_{12}}}\},\]}
+            \only<4->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{11}}} , \textcolor{red}{\bm{\lnot l_{12}}}\},\)}\]}
+            
+            \only<1-2>{\[\{l_{21} , l_{22}\},\]}
+            \only<3->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{21}}} , l_{22}\},\)}\]}
+            
+            \only<1-2>{\[\{\lnot l_{21} , \lnot l_{22}\},\]}
+            \only<3>{\[\{\textcolor{red}{\bm{\lnot l_{21}}} , \lnot l_{22}\},\]}
+            \only<4->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{21}}} , \textcolor[HTML]{008000}{\bm{\lnot l_{22}}}\},\)}\]}
+            
+            \only<1-2>{\[\{l_{31} , l_{32}\},\]}
+            \only<3->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{31} , \textcolor[HTML]{008000}{\bm{l_{32}}}\},\)}\]}
+            
+            \only<1-2>{\[\{\lnot l_{31} , \lnot l_{32}\},\]}
+            \only<3>{\[\{\lnot l_{31} , \textcolor{red}{\bm{\lnot l_{32}}}\},\]}
+            \only<4->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{31}}} , \textcolor{red}{\bm{\lnot l_{32}}}\},\)}\]}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.18\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Majority \\ Voting}}
+            \only<1-3>{\linespread{0.35}}
+            \only<4>{\linespread{0}}
+            \only<1-2>{\[\{\lnot l_{12} , aux_{1}\},\]}
+            \only<3>{\[\{\textcolor{red}{\bm{\lnot l_{12}}} , aux_{1}\},\]}
+            \only<4->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{12}}} , \textcolor[HTML]{008000}{\bm{aux_{1}}}\},\)}\]}
+            \only<1-3>{\linespread{0.5}}
+            \only<4->{\linespread{0.1}}
+            
+            \only<1-3>{\[\{\lnot aux_{1} , aux_{2}\},\]}
+            \only<4->{\[\colorbox[HTML]{FAC8C8}{\(\{\textcolor{red}{\bm{\lnot aux_{1}}} , \textcolor{red}{\bm{aux_{2}}}\},\)}\]}
+            
+            \only<1-3>{\[\{\lnot l_{22} , \lnot aux_{1}\},\]}
+            \only<4->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{22}}} , \textcolor{red}{\bm{\lnot aux_{1}}}\},\)}\]}
+            
+            \only<1-3>{\[\{\lnot l_{22} , aux_{2}\},\]}
+            \only<4->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{22}}} , \textcolor{red}{\bm{aux_{2}}}\},\)}\]}
+            
+            \only<1-2>{\[\{\lnot l_{32} , \lnot aux_{2}\},\]}
+            \only<3>{\[\{\textcolor{red}{\bm{\lnot l_{32}}} , \lnot aux_{2}\},\]}
+            \only<4->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{32}}} , \textcolor[HTML]{008000}{\bm{\lnot aux_{2}}}\},\)}\]}
+            \only<4>{\vspace{0.4}}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.12\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Soft Clauses}}
+            \only<1>{\linespread{0.2}}
+            \only<2->{\linespread{0}}
+            \only<1>{\vspace{1}\[\{\lnot x_{1}\},\]\vspace{1}}
+            \only<2->{\begin{align} \colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\textbf{\[\{\bm{\lnot x_{1}}\},\]}}\)} \end{align}}
+            \only<1>{\linespread{0.5}}
+            \only<2->{\linespread{0}}
+            
+            \only<1>{\[\{\lnot x_{3}\},\]}
+            \only<2->{\begin{align} \colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\textbf{\[\{\bm{\lnot x_{3}}\},\]}}\)} \end{align}}
+            
+            \only<1>{\[\{w\},\]}
+            \only<2->{\begin{align} \colorbox[HTML]{C8FAC8}{\(\textbf{\color[HTML]{008000}{\[\{\bm{w}\},\]}}\)} \end{align}}
+        \end{block}
+        \only<1-> {
+            \vspace{10pt}
+            \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Implicit Clauses}}
+                \linespread{0}
+                \only<1>{\vspace{1} \[\{\lnot x_{2}\}\] \vspace{1}}
+                \only<2->{\begin{align*} \colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{\lnot x_{2}}\}}\)} \end{align*}}
+            \end{block}
+        }
+    \end{minipage}
+    \vspace{2pt}
+    \\
+    \only<1-3>{\textcolor{white}{The formula is \colorbox[HTML]{FFFFFF}{UNSATISFIABLE}: $(\lnot x_{1} \},\{ \lnot x_{3} \},\{ w)$ is a valid AXp candidate. we start dropping variables...}}
+    \only<4>{The formula is \colorbox[HTML]{FAC8C8}{UNSATISFIABLE}: $\{\lnot x_{1} \},\{ \lnot x_{3} \},\{ w\}$ is a valid AXp candidate.}
+\end{frame}
+
+
+\begin{frame}{Heart Disease Example - Step 3}
+    \centering
+    \fontsize{8pt}{1pt}\selectfont 
+    \linespread{0.6}
+    \begin{minipage}[t]{0.22\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{0pt}\selectfont \textbf{Paths}}
+            \only<1>{\linespread{0.2}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{l_{12} , x_{1} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{12} , \textcolor[HTML]{008000}{\bm{x_{1}}} , \textcolor{red}{\textbf{\[\bm{x_{3}}\]}}\)}\]}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            
+            \only<1>{\[\{l_{11} , x_{1} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{11} , \textcolor[HTML]{008000}{\bm{x_{1}}} , \textcolor[HTML]{008000}{\textbf{\[\bm{\lnot x_{3}}\]}}\},\)}\]}
+            
+            \only<1>{\[\{l_{11} , \lnot x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{11}}} , \textcolor{red}{\bm{\lnot x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , x_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{21}}} , \textcolor{red}{\bm{x_{2}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{22} , \lnot x_{2}  , w\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{22} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}}  , \textcolor[HTML]{008000}{\bm{w}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , \lnot x_{2}  , \lnot w\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{21} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}}  , \textcolor{red}{\bm{\lnot w}}\},\)}\]}
+            
+            \only<1>{\[\{l_{32} , x_{2} , x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{32} , \textcolor{red}{\bm{x_{2}}} , \textcolor[HTML]{008000}{\bm{x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , x_{2} , \lnot x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{31}}} , \textcolor{red}{\bm{x_{2}}} , \textcolor{red}{\bm{\lnot x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{32} , \lnot x_{2} , x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{32} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}} , \textcolor{red}{\bm{x_{3}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , \lnot x_{2} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{31} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}} , \textcolor[HTML]{008000}{\bm{\lnot x_{3}}}\},\)}\]}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.19\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Cardinality Network}}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{l_{11} , l_{12}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{11}}} , l_{12}\},\)}\]}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            
+            \only<1>{\[\{\lnot l_{11} , \lnot l_{12}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{11}}} , \textcolor[HTML]{008000}{\bm{\lnot l_{12}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , l_{22}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{21}}} , l_{22}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{21} , \lnot l_{22}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{21}}} , \textcolor[HTML]{008000}{\bm{\lnot l_{22}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , l_{32}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{31}}} , l_{32}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{31} , \lnot l_{32}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{31}}} , \textcolor[HTML]{008000}{\bm{\lnot l_{32}}}\},\)}\]}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.18\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Majority \\ Voting}}
+            \only<1>{\linespread{0.1}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{\lnot l_{12} , aux_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{12}}} , aux_{1}\},\)}\]}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            
+            \only<1>{\[\{\lnot aux_{1} , aux_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot aux_{1}}} , aux_{2}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{22} , \lnot aux_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{22}}} , \lnot aux_{1}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{22} , aux_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{22}}} , aux_{2}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{32} , \lnot aux_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{32}}} , \lnot aux_{2}\},\)}\]}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.12\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Soft Clauses}}
+            \only<1>{\linespread{0.2}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{\lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{\lnot x_{3}}\},}\)}\]}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            
+            \only<1>{\[\{w\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{w}\},}\)}\]}
+        \end{block}
+        \vspace{10pt}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Implicit Clauses}}
+            \only<1>{\linespread{0.2}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{x_{1}}\},}\)}\]}
+            
+            \only<1>{\[\{\lnot x_{2}\}\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{\lnot x_{2}}\}}\)}\]}
+        \end{block}
+    \end{minipage}
+    \vspace{2pt}
+    \\
+    \only<1>{\textcolor{white}{The formula is \colorbox[HTML]{FFFFFF}{SATISFIABLE}: $\{\lnot x_{3} \},\{ w\}$ is not an AXp candidate\\}}
+    \only<2->{The formula is \colorbox[HTML]{C8FAC8}{SATISFIABLE}: $\{\lnot x_{3} \},\{ w\}$ is not an AXp candidate\\}
+\end{frame}
+
+
+
+\begin{frame}{Heart Disease Example - Step 4}
+    \centering
+    \fontsize{8pt}{1pt}\selectfont 
+    \linespread{0.6}
+    \begin{minipage}[t]{0.22\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{0pt}\selectfont \textbf{Paths}}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{l_{12} , x_{1} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{12} , \textcolor{red}{\bm{x_{1}}} , \textcolor[HTML]{008000}{\textbf{\[\bm{x_{3}}\]}}\},\)}\]}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            
+            \only<1>{\[\{l_{11} , x_{1} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{11}}} , \textcolor{red}{\bm{x_{1}}} , \textcolor{red}{\textbf{\[\bm{\lnot x_{3}}\]}}\},\)}\]}
+            
+            \only<1>{\[\{l_{11} , \lnot x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{11} , \textcolor[HTML]{008000}{\bm{\lnot x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , x_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{21}}} , \textcolor{red}{\bm{x_{2}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{22} , \lnot x_{2}  , w\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{22} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}}  , \textcolor[HTML]{008000}{\bm{w}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , \lnot x_{2}  , \lnot w\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{21} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}}  , \textcolor{red}{\bm{\lnot w}}\},\)}\]}
+            
+            \only<1>{\[\{l_{32} , x_{2} , x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{32} , \textcolor{red}{\bm{x_{2}}} , \textcolor{red}{\bm{x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , x_{2} , \lnot x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{31} , \textcolor{red}{\bm{x_{2}}} , \textcolor[HTML]{008000}{\bm{\lnot x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{32} , \lnot x_{2} , x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{32} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}} , \textcolor[HTML]{008000}{\bm{x_{3}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , \lnot x_{2} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{31} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}} , \textcolor{red}{\bm{\lnot x_{3}}}\},\)}\]}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.19\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Cardinality Network}}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{l_{11} , l_{12}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{11}}} , l_{12}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{11} , \lnot l_{12}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{11}}} , \textcolor[HTML]{008000}{\bm{\lnot l_{12}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , l_{22}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{21}}} , l_{22}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{21} , \lnot l_{22}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{21}}} , \textcolor[HTML]{008000}{\bm{\lnot l_{22}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , l_{32}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{31}}} , l_{32}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{31} , \lnot l_{32}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{31}}} , \textcolor[HTML]{008000}{\bm{\lnot l_{32}}}\},\)}\]}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.18\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Majority \\ Voting}}
+            \linespread{0}
+            \only<1>{\[\{\lnot l_{12} , aux_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{12}}} , aux_{1}\},\)}\]}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            
+            \only<1>{\[\{\lnot aux_{1} , aux_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot aux_{1}}} , aux_{2}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{22} , \lnot aux_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{22}}} , \lnot aux_{1}\},\)}\]}
+            
+             \only<1>{\[\{\lnot l_{22} , aux_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{22}}} , aux_{2}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{32} , \lnot aux_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{32}}} , \lnot aux_{2}\},\)}\]}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.12\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Soft Clauses}}
+            \only<1>{\linespread{0.2}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{\lnot x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{\lnot x_{1}}\},}\)}\]}
+            
+            \only<1>{\[\{w\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{w}\},}\)}\]}
+        \end{block}
+        \vspace{10pt}
+        \begin{block}{\centering \fontsize{8.5pt}{1pt}\selectfont \textbf{Implicit Clauses}}
+            \only<1>{\linespread{0.2}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{x_{3}}\},}\)}\]}
+            
+            \only<1>{\[\{\lnot x_{2}\}\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{\lnot x_{2}}\}}\)}\]}
+        \end{block}
+    \end{minipage}
+    \vspace{2pt}
+    \\
+    \only<1>{\textcolor{white}{The formula is \colorbox[HTML]{FFFFFF}{SATISFIABLE}: $\{\lnot x_{1} \},\{ w\}$ is not an AXp candidate\\}}
+    \only<2->{The formula is \colorbox[HTML]{C8FAC8}{SATISFIABLE}: $\{\lnot x_{1} \},\{ w\}$ is not an AXp candidate\\}
+\end{frame}
+
+
+\begin{frame}{Heart Disease Example - Step 5}
+    \centering
+    \fontsize{8pt}{1pt}\selectfont 
+    \linespread{0.6}
+    \begin{minipage}[t]{0.22\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{0pt}\selectfont \textbf{Paths}}
+            \linespread{0.1}
+            \only<1>{\[\{l_{12} , x_{1} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{12}}} , \textcolor{red}{\bm{x_{1}}} , \textcolor{red}{\textbf{\[\bm{x_{3}}\]}}\},\)}\]}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            
+            \only<1>{\[\{l_{11} , x_{1} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{11}}} , \textcolor{red}{\bm{x_{1}}} , \textcolor[HTML]{008000}{\textbf{\[\bm{\lnot x_{3}}\]}}\},\)}\]}
+            
+            \only<1>{\[\{l_{11} , \lnot x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{11} , \textcolor[HTML]{008000}{\bm{\lnot x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , x_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{21}}} , \textcolor{red}{\bm{x_{2}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{22} , \lnot x_{2}  , w\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{22} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}}  , \textcolor{red}{\bm{w}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , \lnot x_{2}  , \lnot w\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{21} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}}  , \textcolor[HTML]{008000}{\bm{\lnot w}}\},\)}\]}
+            
+            \only<1>{\[\{l_{32} , x_{2} , x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{32}}} , \textcolor{red}{\bm{x_{2}}} , \textcolor{red}{\bm{x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , x_{2} , \lnot x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{31} , \textcolor{red}{\bm{x_{2}}} , \textcolor[HTML]{008000}{\bm{\lnot x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{32} , \lnot x_{2} , x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{32} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}} , \textcolor{red}{\bm{x_{3}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , \lnot x_{2} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{31} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}} , \textcolor[HTML]{008000}{\bm{\lnot x_{3}}}\},\)}\]}
+            \only<1>{\vspace{1pt}}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.19\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Cardinality Network}}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{l_{11} , l_{12}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{11} , \textcolor[HTML]{008000}{\bm{l_{12}}}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{11} , \lnot l_{12}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{11}}} , \textcolor{red}{\bm{\lnot l_{12}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , l_{22}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{21}}} , l_{22}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{21} , \lnot l_{22}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{21}}} , \textcolor[HTML]{008000}{\bm{\lnot l_{22}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , l_{32}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{31}}} , l_{32}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{31} , \lnot l_{32}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{31}}} , \textcolor{red}{\bm{\lnot l_{32}}}\},\)}\]}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.18\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Majority \\ Voting}}
+            \linespread{0}
+            \only<1>{\[\{\lnot l_{12} , aux_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{12}}} , \textcolor[HTML]{008000}{\bm{aux_{1}}}\},\)}\]}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            
+            \only<1>{\[\{\lnot aux_{1} , aux_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{FAC8C8}{\(\{\textcolor{red}{\bm{\lnot aux_{1}}} , \textcolor{red}{\bm{aux_{2}}}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{22} , \lnot aux_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{22}}} , \lnot aux_{1}\},\)}\]}
+            
+             \only<1>{\[\{\lnot l_{22} , aux_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{22}}} , aux_{2}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{32} , \lnot aux_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{32}}} , \textcolor[HTML]{008000}{\bm{\lnot aux_{2}}}\},\)}\]}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.12\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Soft Clauses}}
+            \only<1>{\linespread{0.2}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{\lnot x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{\lnot x_{1}}\},}\)}\]}
+            
+            \only<1>{\[\{\lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{\lnot x_{3}}\},}\)}\]}
+        \end{block}
+        \vspace{10pt}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Implicit Clauses}}
+            \only<1>{\linespread{0.2}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{\lnot w\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{\lnot w}\},}\)}\]}
+            
+            \only<1>{\[\{\lnot x_{2}\}\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{\lnot x_{2}}\}}\)}\]}
+        \end{block}
+    \end{minipage}
+    \vspace{2pt}
+    \\
+    \only<1>{\textcolor{white}{The formula is \colorbox[HTML]{FFFFFF}{UNSATISFIABLE}: $\{\lnot x_{1} \},\{ \lnot x_{3}\}$ is a valid and better AXp candidate.}}
+    \only<2->{The formula is \colorbox[HTML]{FAC8C8}{UNSATISFIABLE}: $\{\lnot x_{1} \},\{ \lnot x_{3}\}$ is a valid and better AXp candidate.}
+\end{frame}
+
+
+
+\begin{frame}{Heart Disease Example - Step 6}
+    \centering
+    \fontsize{8pt}{1pt}\selectfont 
+    \linespread{0.6}
+    \begin{minipage}[t]{0.22\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{0pt}\selectfont \textbf{Paths}}
+            \only<1>{\linespread{0.1}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{l_{12} , x_{1} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{12} , \textcolor[HTML]{008000}{\bm{x_{1}}} , \textcolor{red}{\textbf{\[\bm{x_{3}}\]}}\},\)}\]}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            
+            \only<1>{\[\{l_{11} , x_{1} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{11}}} , \textcolor[HTML]{008000}{\bm{x_{1}}} , \textcolor[HTML]{008000}{\textbf{\[\bm{\lnot x_{3}}\]}}\},\)}\]}
+            
+            \only<1>{\[\{l_{11} , \lnot x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{11}}} , \textcolor{red}{\bm{\lnot x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , x_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{21}}} , \textcolor{red}{\bm{x_{2}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{22} , \lnot x_{2}  , w\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{22} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}}  , \textcolor{red}{\bm{w}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , \lnot x_{2}  , \lnot w\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{21} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}}  , \textcolor[HTML]{008000}{\bm{\lnot w}}\},\)}\]}
+            
+            \only<1>{\[\{l_{32} , x_{2} , x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{32} , \textcolor{red}{\bm{x_{2}}} , \textcolor[HTML]{008000}{\bm{x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , x_{2} , \lnot x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{31}}} , \textcolor{red}{\bm{x_{2}}} , \textcolor{red}{\bm{\lnot x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{32} , \lnot x_{2} , x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{32}  , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}} , \textcolor{red}{\bm{x_{3}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , \lnot x_{2} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{31} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}} , \textcolor[HTML]{008000}{\bm{\lnot x_{3}}}\},\)}\]}
+            %\only<1>{\vspace{1pt}}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.19\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Cardinality Network}}
+            \only<1>{\linespread{0.1}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{l_{11} , l_{12}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{11}}} , l_{12}\},\)}\]}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            
+            \only<1>{\[\{\lnot l_{11} , \lnot l_{12}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{11}}} , \textcolor[HTML]{008000}{\bm{\lnot l_{12}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , l_{22}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{21}}} , l_{22}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{21} , \lnot l_{22}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{21}}} , \textcolor[HTML]{008000}{\bm{\lnot l_{22}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , l_{32}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{31}}} , l_{32}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{31} , \lnot l_{32}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{31}}} , \textcolor[HTML]{008000}{\bm{\lnot l_{32}}}\},\)}\]}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.18\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Majority \\ Voting}}
+            \only<1>{\linespread{0.1}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{\lnot l_{12} , aux_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{12}}} , aux_{1}\},\)}\]}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            
+            \only<1>{\[\{\lnot aux_{1} , aux_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot aux_{1}}} , aux_{2}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{22} , \lnot aux_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{22}}} , \lnot aux_{1}\},\)}\]}
+            
+             \only<1>{\[\{\lnot l_{22} , aux_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{22}}} , aux_{2}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{32} , \lnot aux_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{32}}} , \lnot aux_{2}\},\)}\]}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.12\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Soft Clauses}}
+            \only<1>{\linespread{0.1}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{\lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{\lnot x_{3}}\},}\)}\]}
+        \end{block}
+        \vspace{10pt}
+        \begin{block}{\centering \fontsize{8.5pt}{1pt}\selectfont \textbf{Implicit Clauses}}
+            \only<1>{\linespread{0.1}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{x_{1}}\},}\)}\]}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            
+            \only<1>{\[\{\lnot w\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{\lnot w}\},}\)}\]}
+            
+            \only<1>{\[\{\lnot x_{2}\}\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{\lnot x_{2}}\}}\)}\]}
+        \end{block}
+    \end{minipage}
+    \vspace{2pt}
+    \\
+    \only<1>{\textcolor{white}{The formula is \colorbox[HTML]{FFFFFF}{SATISFIABLE}: $\lnot x_{3}$ is not an AXp candidate\\}}
+    \only<2->{The formula is \colorbox[HTML]{C8FAC8}{SATISFIABLE}: $\{\lnot x_{3}\}$ is not an AXp candidate\\}
+\end{frame}
+
+
+
+\begin{frame}{Heart Disease Example - Step 7}
+    \centering
+    \fontsize{8pt}{1pt}\selectfont 
+    \linespread{0.6}
+    \begin{minipage}[t]{0.22\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{0pt}\selectfont \textbf{Paths}}
+            \only<1>{\linespread{0.1}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{l_{12} , x_{1} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{12} , \textcolor{red}{\bm{x_{1}}} , \textcolor[HTML]{008000}{\textbf{\[\bm{x_{3}}\]}}\},\)}\]}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            
+            \only<1>{\[\{l_{11} , x_{1} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{11}}} , \textcolor{red}{\bm{x_{1}}} , \textcolor{red}{\textbf{\[\bm{\lnot x_{3}}\]}}\},\)}\]}
+            
+            \only<1>{\[\{l_{11} , \lnot x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{11} , \textcolor[HTML]{008000}{\bm{\lnot x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , x_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{21}}} , \textcolor{red}{\bm{x_{2}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{22} , \lnot x_{2}  , w\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{22} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}}  , \textcolor{red}{\bm{w}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , \lnot x_{2}  , \lnot w\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{21} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}}  , \textcolor[HTML]{008000}{\bm{\lnot w}}\},\)}\]}
+            
+            \only<1>{\[\{l_{32} , x_{2} , x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{32}}} , \textcolor{red}{\bm{x_{2}}} , \textcolor{red}{\bm{x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , x_{2} , \lnot x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{31} , \textcolor{red}{\bm{x_{2}}} , \textcolor[HTML]{008000}{\bm{\lnot x_{1}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{32} , \lnot x_{2} , x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{32}  , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}} , \textcolor[HTML]{008000}{\bm{x_{3}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , \lnot x_{2} , \lnot x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{31} , \textcolor[HTML]{008000}{\bm{\lnot x_{2}}} , \textcolor{red}{\bm{\lnot x_{3}}}\},\)}\]}
+            %\only<1>{\vspace{1pt}}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.19\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Cardinality Network}}
+            \only<1>{\linespread{0.1}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{l_{11} , l_{12}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{11}}} , l_{12}\},\)}\]}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            
+            \only<1>{\[\{\lnot l_{11} , \lnot l_{12}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{11}}} , \textcolor[HTML]{008000}{\bm{\lnot l_{12}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{21} , l_{22}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{l_{21}}} , l_{22}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{21} , \lnot l_{22}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{21}}} , \textcolor[HTML]{008000}{\bm{\lnot l_{22}}}\},\)}\]}
+            
+            \only<1>{\[\{l_{31} , l_{32}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{l_{31} , \textcolor[HTML]{008000}{\bm{l_{32}}}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{31} , \lnot l_{32}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{31}}} , \textcolor{red}{\bm{\lnot l_{32}}}\},\)}\]}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.18\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Majority \\ Voting}}
+            \only<1>{\linespread{0.1}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{\lnot l_{12} , aux_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{12}}} , aux_{1}\},\)}\]}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            
+            \only<1>{\[\{\lnot aux_{1} , aux_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot aux_{1}}} , \textcolor{red}{\bm{aux_{2}}}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{22} , \lnot aux_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{22}}} , \lnot aux_{1}\},\)}\]}
+            
+             \only<1>{\[\{\lnot l_{22} , aux_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor[HTML]{008000}{\bm{\lnot l_{22}}} , aux_{2}\},\)}\]}
+            
+            \only<1>{\[\{\lnot l_{32} , \lnot aux_{2}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\{\textcolor{red}{\bm{\lnot l_{32}}} , \textcolor[HTML]{008000}{\bm{\lnot aux_{2}}}\},\)}\]}
+        \end{block}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}[t]{0.12\textwidth}
+        \begin{block}{\centering \fontsize{8.5pt}{2pt}\selectfont \textbf{Soft Clauses}}
+            \only<1>{\linespread{0.1}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{\lnot x_{1}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{\lnot x_{1}}\},}\)}\]}
+        \end{block}
+        \vspace{10pt}
+        \begin{block}{\centering \fontsize{8.5pt}{1pt}\selectfont \textbf{Implicit Clauses}}
+            \only<1>{\linespread{0.1}}
+            \only<2->{\linespread{0}}
+            \only<1>{\[\{x_{3}\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{x_{3}}\},}\)}\]}
+            \only<1>{\linespread{0.3}}
+            \only<2->{\linespread{0}}
+            
+            \only<1>{\[\{\lnot w\},\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{\lnot w}\},}\)}\]}
+            
+            \only<1>{\[\{\lnot x_{2}\}\]}
+            \only<2->{\[\colorbox[HTML]{C8FAC8}{\(\textcolor[HTML]{008000}{\{\bm{\lnot x_{2}}\}}\)}\]}
+        \end{block}
+    \end{minipage}
+    \vspace{2pt}
+    \\
+    \only<1>{\textcolor{white}{The formula is \colorbox[HTML]{FFFFFF}{SATISFIABLE}: $\lnot x_{1}$ is not an AXp candidate\\}}
+    \only<2->{The formula is \colorbox[HTML]{C8FAC8}{SATISFIABLE}: $\{\lnot x_{1}\}$ is not an AXp candidate\\}
+\end{frame}
+
+\begin{frame}{Heart Disease Example - Results Summary}
+    \begin{center}
+        \begin{tikzpicture}[->,>=stealth',level/.style={sibling distance=5.5cm/#1}]
+            \node[draw] (root) {$\{\lnot x_{1}\}, \{x_{2}\}, \{\lnot x_{3}\}, \{w\}$}
+            child {
+                node[] (l1) {$\colorbox[HTML]{C8FAC8}{\(\{x_{2}\}, \{\lnot x_{3}\}, \{w\}\)}$}
+                edge from parent node[l1] {}
+            }
+            child {
+                node[] (r1) {$\colorbox[HTML]{FAC8C8}{\(\{\lnot x_{1}\}, \{\lnot x_{3}\}, \{w\}\)}$}
+                child {
+                    node[] (l2) {$\colorbox[HTML]{C8FAC8}{\(\{\lnot x_{3}\}, \{w\}\)}$}
+                    edge from parent node[r1] {}
+                }
+                child {
+                    node[] (c2) {$\colorbox[HTML]{C8FAC8}{\(\{\lnot x_{1}\}, \{w\}\)}$}
+                    edge from parent node[r1] {}
+                }
+                child {
+                    node[] (r2) {$\colorbox[HTML]{FAC8C8}{\(\{\lnot x_{1}\}, \{\lnot x_{3}\}\)}$}
+                    child {
+                        node[] (l3) {$\colorbox[HTML]{C8FAC8}{\(\{\lnot x_{1}\}\)}$}
+                        edge from parent node[l3] {}
+                    }
+                    child {
+                        node[] (r3) {$\colorbox[HTML]{C8FAC8}{\(\{\lnot x_{3}\}\)}$}
+                        edge from parent node[r3] {}
+                    }
+                }
+            };
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Heart Disease Example - Algorithm}
+\begin{algorithm}[H]
+    \KwData{v (features), s (SAT solver with hard clauses inserted)} \\
+    \KwResult{axp (subset of features)} \\
+    $i \gets 0$; $axp \gets copy(v)$; $n \gets length(v)$\; \\
+    \While{$(i < n) \land (n > 1)$}{
+        $x \gets v[:i] \cup v[(i + 1):]$\; \\
+        \If{s.solve(assumptions=x)}{
+            $i \gets i + 1$\;
+        }
+        \Else{
+            $axp \gets x$\; \\
+            $v \gets v[:i] + v[(i + 1):]$\; \\
+            $n \gets n - 1$\; \\
+            $i \gets 0$\;
+        }
+    }
+    \textbf{Output:} axp
+    \caption{Find AXp}
+\end{algorithm}
+\end{frame}

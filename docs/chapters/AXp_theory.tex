@@ -1,0 +1,34 @@
+\begin{frame}{Abductive Explanations (AXps)}
+    \footnotesize
+    \begin{block}{Definition}
+        A PI-explanation (AXp) is any minimal subset  \(\mathcal{X} \subseteq \mathcal{F} \) such that:
+        \begin{equation*}
+            \forall (\mathbf{x} \in \mathbb{F}), \, \left[ \bigwedge_{i \in \mathcal{X}} (x_i = v_i) \right] \rightarrow (\tau(\mathbf{x}) = c)
+        \end{equation*}
+    \end{block}
+    \begin{block}{Soft and Hard Clauses \(\langle \mathcal{H},\mathcal{S} \rangle\)}
+        \begin{itemize}
+            \item Soft Clause: clause that can be dropped, thus allowing $x_{i}$ to take any value
+            \item Hard Clause: constrained clause used for encoding the representation of the predicted class
+        \end{itemize}
+    \end{block}
+    \begin{block}{Goal}
+        Find, gradually making the variables free, the minimum feature set $\mathcal{E} \subseteq \mathcal{S}$ while still keeping the pair $\langle \mathcal{H},\mathcal{S} \rangle$ unsatisfiable.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Abductive Explanations (AXps)}
+    \begin{block}{Computing AXps}
+        The set of features $\mathcal{X}$ is an AXp if the following formula is unsatisfiable:
+        \begin{equation*}
+            \left[ \bigwedge_{i \in \mathcal{X}} (x_i = v_i) \right] \land Enc(\tau(\mathbf{x}) \neq c)
+        \end{equation*}
+        This results in searching for a minimal subset $\mathcal{E} \subseteq \mathcal{S}$ such that
+        \begin{equation*}
+            \left[ \bigwedge_{(x_i = v_i) \in \mathcal{E}} (x_i = v_i) \right] \land Enc(\tau(\mathbf{x}) \neq c)
+        \end{equation*} 
+        is unsatisfiable.
+        \vspace{2pt}
+    \end{block}
+\end{frame}
+

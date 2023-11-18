@@ -1,1 +1,13 @@
 src/model*
+docs/chapters/*.aux
+docs/*.aux
+docs/*.fdb_latexmk
+docs/*.fls
+docs/*.log
+docs/*.nav
+docs/*.out
+docs/*.snm
+docs/*.gz
+docs/*.aux
+docs/*.toc
+docs/*.pdf
