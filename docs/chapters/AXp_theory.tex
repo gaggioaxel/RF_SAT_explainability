@@ -1,5 +1,4 @@
 \begin{frame}{Abductive Explanations (AXps)}
-    \footnotesize
     \begin{block}{Definition}
         A PI-explanation (AXp) is any minimal subset  \(\mathcal{X} \subseteq \mathcal{F} \) such that:
         \begin{equation*}
@@ -8,16 +7,14 @@
     \end{block}
     \begin{block}{Soft and Hard Clauses \(\langle \mathcal{H},\mathcal{S} \rangle\)}
         \begin{itemize}
-            \item Soft Clause: clause that can be dropped, thus allowing $x_{i}$ to take any value
-            \item Hard Clause: constrained clause used for encoding the representation of the predicted class
+            \item Soft Clause: clause that can be dropped, thus allowing it's variables to take any value
+            \item Hard Clause: constraint clause that must be true for the satisfiability of the formula
         \end{itemize}
-    \end{block}
-    \begin{block}{Goal}
-        Find, gradually making the variables free, the minimum feature set $\mathcal{E} \subseteq \mathcal{S}$ while still keeping the pair $\langle \mathcal{H},\mathcal{S} \rangle$ unsatisfiable.
     \end{block}
 \end{frame}
 
 \begin{frame}{Abductive Explanations (AXps)}
+    \footnotesize
     \begin{block}{Computing AXps}
         The set of features $\mathcal{X}$ is an AXp if the following formula is unsatisfiable:
         \begin{equation*}
@@ -30,5 +27,7 @@
         is unsatisfiable.
         \vspace{2pt}
     \end{block}
+    \begin{block}{Goal}
+        Find, gradually making the variables free, the minimum feature set $\mathcal{E} \subseteq \mathcal{S}$ while still keeping the pair $\langle \mathcal{H},\mathcal{S} \rangle$ unsatisfiable.
+    \end{block}
 \end{frame}
-

@@ -13,6 +13,7 @@
 \usepackage{caption}
 \usepackage{multirow}
 \usepackage{array}
+\usepackage{mathrsfs}
 \usepackage{tikz}
 
 \theoremstyle{plain}
@@ -35,12 +36,145 @@
   \titlepage
 \end{frame}
 
-\include{chapters/paper.tex}
-\include{chapters/paths_encoding.tex}
-\include{chapters/cardinality_network.tex}
-\include{chapters/majority_voting.tex}
-\include{chapters/AXp_theory.tex}
-\include{chapters/heart_disease_example.tex}
-\include{chapters/acknowledgement.tex}
+\include{paper.tex}
+\include{paths_encoding.tex}
+\include{cardinality_network.tex}
+\include{majority_voting.tex}
+\include{AXp_theory.tex}
+\include{heart_disease_example.tex}
+\include{acknowledgement.tex}
 
 \end{document}
+
+
+% Discorso:
+
+\\\\ GOALS \\\\
+The goals of this project are
+
+Compute the extraction of MUSes:
+This involves the computational process outlined in the paper "On Explaining Random Forests with SAT" authored by Izza and Marques-Silva.
+The goal is to employ methods detailed in the paper to extract Minimal Unsatisfiable Subsets (MUSes). These subsets are fundamental in comprehending the process of decision-making within Random Forests, offering insights into the reasons behind particular outcomes or predictions.
+
+Develop a methodology to handle auxiliary variable manipulation:
+During the encoding process, auxiliary variables are introduced. To ensure there are no conflicts or overlaps between these variable identifiers, the aim is to devise a systematic approach. This method will effectively manage and manipulate these auxiliary variables, preventing any collision in their identifiers and ensuring a smooth encoding process.
+
+Implement a mechanism to differentiate majority voting encoding:
+In scenarios involving classification tasks with multiple classes, differenent number of classes lead to different optimization kinds. And this could result in strong improvements for the solving algorithm. 
+
+
+\\\\ PROPOSED PAPER \\\\
+The proposed paper provides a brief introduction to classification, decision trees and random forest classifiers. It mentions the feature set and its corresponding feature space, the class set, the concept of an instance, and other details that will be further explored in the "symbology" section later on.
+
+Recent work identified classes of classifiers for which one AXp can be
+computed in polynomial time.
+One question is if can might exist a polynomial time algorithm for computing AXp of an RF.
+This paper answers this question negatively, by proving
+that deciding whether a set of literals is an AXp of an RF is DP-complete.
+DP-completeness is a class of problems that can be solved efficiently using Dynamic Programming
+
+
+For last, the paper proposes how to represent the structure of an RF with a propositional formula.
+The paper presents the encoding of the RF classifier and proposes the Sat solver as the method to find AXp.
+
+
+
+\\\\ SYMBOLOGY \\\\
+We will use this symbology, which is the same provided by the paper to denote features, classes and so on. 
+In particular, it's important to highlight the difference between x and v symbols that allow to differenciate between 
+the set of arbitrary points of the feature space and it's realization in the instance considered
+
+
+\\\\ PATHS \\\\
+As first, we encode all the paths of each tree componing the forest.
+Every path k of the possible paths of the tree i (ai) must be satisfied at the same time for the tree to be consistent 
+
+
+\\\\ CARDINALITY NETWORK \\\\
+Boh, descrizione formula
+
+
+\\\\ MAJORITY VOTING \\\\
+Boh, descrizione formula
+
+
+
+\\\\ AXp \\\\
+An AXp is any minimal subset of the feature set such that for every set of arbitrary points of the feature space, which have a realization into the v instance that still implies the prediction of x into the class c, treating the xi considered as assumptions
+
+We define the soft clauses, which are those that can be dropped, the x feature set allowing xi to take any value.
+the hard clauses, are instead those used for encoding the forest, by providing a consistent representation of the classifier.
+
+
+\\\\ HEART DISEASE EXAMPLE - CONTEX \\\\
+Let us assume a simple binary classification problem for predicting whether or not a patient has a heart disease.
+The class variables are: Yes and No (Yes to classify the patient as suffering from heart disease and No to classify the patient as without heart disease.).
+A set of features in the following order: blocked-arteries, good-blood-
+circulation, chest-pain, and weight.
+These 3 trees compose the RF classifier F trained on the heart
+disease problem and τ its classification function.
+Assume we have an instance v = (1, 0, 1, 70), namely,
+blocked-arteries = 1, good-blood-circulation = 0, chest-pain
+= 1, weight = 70.
+Hence, Trees 1 and 3 vote for Yes and Tree 2 votes for No. As the majority votes go for Yes, then the classifier will return Yes for v, or τau (v) is Yes.
+We will refer to this example later on.
+
+
+
+\\\\ STEP 0 \\\\
+Let's compute the AXp for this example.
+We consider the paths, the cardinality network and the majority voting encoding and we start considering the initial soft clauses.
+This is the transcription of the results obtained from the code, written in the conjunctive normal form using the first order logic notation. So in every parenthesis the literals are in or while overall each clause is in and with the others.
+We call "implicit clauses" those clauses that are made free and are assumed as negated
+
+
+\\\\ STEP 1 \\\\
+the algorithm proceed by dropping the first literal of the soft clauses, not x1, and we consider this subset of soft clauses.
+As said, we make this assumption in the soft clauses because we already know that assuming not x1 as True, the set of clauses would result in the correct prediction and thus, automatically this formula, which is it's negation would be unsatisfiable.
+Step by step we will see how the solver tries to satisfy this formula.
+We consider x2, not x3 and w as true clauses and also x1 as a true clause.
+
+\\\\ NEXT (STEP 1.2) \\\\
+Using this assumptions we satisfy some paths encoding.
+In dark green there are the literals evaluated as true, in red those as false.
+We notice that to satisfy these 3 clauses in the paths we are obliged to make l11, l21 and l32 true.
+
+\\\\ NEXT (STEP 1.3) \\\\
+assume not l12, not l22, not l31 and not aux2
+
+\\\ NEXT (STEP 1.4) \\\\
+not aux1 and
+
+\\\ NEXT (STEP 1.5) \\\\
+formula is satisfiable
+
+\\\ STEP 2 \\\\
+now we try to set free x2 
+
+EXPLAIN AS YOU GO
+
+15/23
+we reach a contradiction, the formula is UNSATISFIABLE 
+
+so we go on from there
+
+NEXT
+16/23
+free not x1
+now we go faster
+NEXT
+is SAT
+NEXT
+STEP 4 
+is SAT
+NEXT
+STEP 5
+is UNSAT
+STEP 6
+
+REACH RESULTS
+We can se the whole process summarized
+NEXT 
+And this is the algorithm
+
+thank you

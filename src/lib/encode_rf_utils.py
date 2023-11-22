@@ -816,7 +816,7 @@ def muses_mock_model():
     #instance_v = [1,4,9] # v=(1,4,11) tau_v=0
     #instance_v = [-1,4,11] # v=(1,4,11) tau_v=0
     #instance_v = [1,6,9]  # v=(1,6,9) tau_v=1
-    instance_v = [-1,6,9] # v=(-1,6,9) tau_v=1
+    #instance_v = [-1,6,9] # v=(-1,6,9) tau_v=1
     tau_v = 1
 
     model, feature_names = create_mock_model()

@@ -9,8 +9,11 @@
     \vfill
     \begin{center}
         \fontsize{7}{10}\selectfont
-        \textbf{GITHUB REPOSITORY}\\
-        \url{https://github.com/yizza91/RFxpl}
+        \textbf{PAPER GITHUB REPOSITORY}\\
+        \url{https://github.com/yizza91/RFxpl}\\
+        \vspace{1em}
+        \textbf{OUR GITHUB REPOSITORY}\\
+        \url{https://github.com/gaggioaxel/RF_SAT_explainability}
     \end{center}
 \end{frame}
 
@@ -21,7 +24,6 @@
             \item Brief introduction to ML Classification, Decision Trees and Random Forest Classifiers
             \item Answers the question of whether finding explanations of RFs can be solved in polynomial time negatively, by proving that deciding whether a set of literals is a PI-explanation of an RF is DP-complete
             \item Proposes a propositional encoding for computing explanations of RFs, thus enabling finding PI-explanations with a SAT solver
-            \item Experimental findings, derived from an extensive array of publicly accessible datasets, highlight a substantial performance improvement in the proposed SAT-based method compared to existing heuristic approaches
         \end{itemize}
     \end{block}
 \end{frame}
@@ -31,8 +33,8 @@
         \begin{itemize}
             \item \(\mathcal{F}\) = \( \{ 1, ..., m \} \) is the set of features
             \item \(\mathcal{K}\) = \( \{ c_{1}, ..., c_{K} \} \) is the set of classes
-            \item $\mathbf{x}$ = \( \{ x_{1}, ..., x_{m} \} \) is an arbitrary point in the feature space $\mathbb{F}$
-            \item $\mathbf{v}$ = \( \{ v_{1}, ..., v_{m} \} \) is an specific point in the feature space $\mathbb{F}$
+            \item $\mathbf{x}$ = \( \{ x_{1}, ..., x_{m} \} \) is the set of arbitrary points in the feature space $\mathbb{F}$
+            \item $\mathbf{v}$ = \( \{ v_{1}, ..., v_{m} \} \) is the set of specific points in the feature space $\mathbb{F}$
             \item A pair ($\mathbf{v}$, c) is an instance where $\mathbf{v} \in \mathbb{F}$ and c $\in \mathcal{K}$
             \item M is the number of trees of the Random Forest
             \item $\mathcal{T}_{i}$ is the \textit{i}-th tree
